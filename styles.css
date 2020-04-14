@@ -47,6 +47,10 @@ h1 {
   -webkit-animation: neon 3s infinite;
           animation: neon 3s infinite;
 }
+.lattes {
+  position: relative;
+  top: 4px
+}
 
 @-webkit-keyframes neon {
   0% {
