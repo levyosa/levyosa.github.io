@@ -3,7 +3,7 @@
   margin: 0;
   box-sizing: border-box;
   background-color: black;
-  min-width:max-content;
+  /* min-width:max-content; */
 }
 
 html, body {
@@ -67,13 +67,14 @@ p{
   min-width: max-content;
   
 }
-.dropdown-content a{
-  font-size: 4em;
-  color: black;
-}
 
 .dropdown:hover .dropdown-content {
   display: inline-block;
+}
+
+.flag{
+  height: 4em;
+  border-radius: 25%;
 }
 
 
