@@ -3,7 +3,6 @@
   margin: 0;
   box-sizing: border-box;
   background-color: black;
-  /* min-width:max-content; */
 }
 
 html, body {
@@ -78,6 +77,8 @@ p{
 }
 
 
-
+::selection{
+  background: transparent;
+}
 
 
