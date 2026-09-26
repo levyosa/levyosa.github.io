@@ -1,0 +1,53 @@
+/* shared by status.html, career.html, reconcile.html */
+:root {
+  --bg: #000;
+  --panel: #111116;
+  --panel-2: #1b1b23;
+  --text: #e6e6ff;
+  --muted: #8a8aa3;
+  --green: #3ecf8e;
+  --yellow: #f5c542;
+  --red: #ff5d5d;
+  --mono: ui-monospace, Menlo, Consolas, monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font: 15px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px 16px 80px;
+}
+
+a { color: var(--text); }
+h1, h2, .logo { font-family: "Archivo Black", sans-serif; font-weight: normal; text-transform: uppercase; }
+h1 { font-size: clamp(32px, 8vw, 56px); line-height: 1; margin: 32px 0 8px; }
+h2 { font-size: 18px; margin: 36px 0 12px; }
+.sub { color: var(--muted); margin-bottom: 28px; }
+
+nav { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 12px; }
+nav .logo { font-size: 22px; text-decoration: none; }
+nav span a { margin-left: 16px; font: 13px var(--mono); color: var(--muted); text-decoration: none; }
+nav span a:hover { color: var(--text); }
+
+.box { background: var(--panel); padding: 16px 20px; margin-bottom: 16px; }
+
+button {
+  font: 13px var(--mono);
+  background: var(--panel-2);
+  color: var(--text);
+  border: 0;
+  padding: 8px 14px;
+  cursor: pointer;
+}
+button:hover { background: #262632; }
+
+.mono { font-family: var(--mono); }
+.ok { color: var(--green); }
+.warn { color: var(--yellow); }
+.bad { color: var(--red); }
+.muted { color: var(--muted); }
+footer { margin-top: 56px; color: var(--muted); font-size: 14px; }

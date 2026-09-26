@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Levy Status</title>
+	<link href="https://fonts.googleapis.com/css?family=Archivo+Black&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="fun.css">
+	<style>
+		.banner { background: rgba(62, 207, 142, .12); display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+		.banner b { font-size: 18px; }
+		.banner .muted { margin-left: auto; font-size: 13px; }
+
+		.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 16px; }
+		.stats .box { margin: 0; }
+		.stats b { display: block; font: 26px "Archivo Black", sans-serif; }
+
+		.comp { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; }
+		.comp .mono { white-space: nowrap; font-size: 13px; }
+
+
+		.incident { margin-bottom: 22px; }
+		.incident:last-child { margin: 0; }
+		.incident .when { font: 12px var(--mono); color: var(--muted); }
+		.incident p { color: #c4c4dc; }
+	</style>
+</head>
+<body>
+	<nav>
+		<a class="logo" href="index.html">Levy F.</a>
+		<span><a href="status.html">status</a><a href="career.html">career</a></span>
+	</nav>
+
+	<h1>Status</h1>
+	<p class="sub">Real-time health of one (1) payments backend engineer.</p>
+
+	<div class="box banner">
+		<span class="ok">●</span>
+		<b>All systems operational</b>
+		<span class="muted mono">checked <span id="checked">just now</span></span>
+	</div>
+
+	<div class="stats">
+		<div class="box"><b id="uptime">...</b><span class="muted">years online, since 2017</span></div>
+		<div class="box"><b>99.9%+</b><span class="muted">uptime on the payment systems I ran</span></div>
+		<div class="box"><b>5+ yrs</b><span class="muted">building fintech backends</span></div>
+	</div>
+
+	<h2>Components</h2>
+	<div class="box" id="components">
+		<div class="comp"><span>Backend engineering <span class="muted">Java, Spring Boot</span></span><span class="mono ok">● Operational</span></div>
+		<div class="comp"><span>Cloud &amp; CI/CD <span class="muted">AWS ECS, GitHub Actions, Datadog</span></span><span class="mono ok">● Operational</span></div>
+		<div class="comp" data-flaky="0.04" data-why="missed golden hour"><span>Photography <a class="muted" href="https://instagram.com/levy.foto" target="_blank">@levy.foto</a></span><span class="mono ok">● Operational</span></div>
+		<div class="comp" data-flaky="0.25" data-why="beans running low"><span>Coffee supply</span><span class="mono warn">◐ Degraded</span></div>
+		<div class="comp" data-flaky="0.45" data-why="deploy at 2am"><span>Sleep</span><span class="mono bad">○ Partial outage</span></div>
+	</div>
+
+	<h2>Incident history</h2>
+	<div class="box">
+		<div class="incident">
+			<div class="when">Aug 2024 – now · <span class="ok">ongoing</span></div>
+			<b>MAPS S.A.</b>
+			<p>Building and scaling BOLETO, PIX and STR services with Java/Spring Boot, Kafka and AWS ECS.</p>
+			<p>Running reconciliation for boleto settlements. Every cent accounted for.</p>
+		</div>
+		<div class="incident">
+			<div class="when">Dec 2025 · <span class="warn">maintenance</span></div>
+			<b>UFSCar</b>
+			<p>Postgrad in Computing installed. No downtime.</p>
+		</div>
+		<div class="incident">
+			<div class="when">Sep 2021 – Aug 2024 · resolved</div>
+			<b>EBANX</b>
+			<p>Payment systems integrated with SPI, PIX and STR at 99.9%+ uptime.</p>
+			<p>Moved the repos to GitHub, set up CI/CD with GitHub Actions, wired up Datadog.</p>
+			<p>Mentored an intern. Did a lot of code reviews.</p>
+		</div>
+		<div class="incident">
+			<div class="when">Mar 2021 – Sep 2021 · resolved</div>
+			<b>Cogna / Unopar</b>
+			<p>Kept networks and servers alive. Taught algorithm classes.</p>
+		</div>
+		<div class="incident">
+			<div class="when">Mar 2020 – Feb 2021 · resolved</div>
+			<b>UNESPAR</b>
+			<p>First deploy. IT intern. Survived.</p>
+		</div>
+		<div class="incident">
+			<div class="when">2017 – 2021 · resolved</div>
+			<b>IFPR</b>
+			<p>Systems Analysis &amp; Development. Published a Hyper-Threading study and an IoT air conditioner remote.</p>
+		</div>
+		<div class="incident">
+			<div class="when"><span class="warn">postmortem</span></div>
+			<b>Unexpected wins 🏆</b>
+			<p>1st, Células Empreendedoras Marathon (2018)</p>
+			<p>1st, IFTECH Innovation Fair, Paranaguá (2019)</p>
+			<p>1st, First Class Space Explorer, Curitiba</p>
+			<p class="muted">Root cause: curiosity.</p>
+		</div>
+	</div>
+
+	<footer>Thanks for stopping by. Want to get in touch? <a href="https://www.linkedin.com/in/levyosa/" target="_blank">LinkedIn</a> · <a href="https://instagram.com/levy.foto" target="_blank">Instagram</a></footer>
+
+	<script>
+		const start = new Date("2017-02-01");
+		let seconds = 0;
+
+		setInterval(() => {
+			const years = (Date.now() - start) / (365.25 * 24 * 60 * 60 * 1000);
+			document.getElementById("uptime").textContent = years.toFixed(6);
+		}, 100);
+
+		setInterval(() => {
+			seconds++;
+			document.getElementById("checked").textContent = seconds + "s ago";
+		}, 1000);
+	</script>
+</body>
+</html>
