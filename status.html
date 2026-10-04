@@ -18,6 +18,12 @@
 		.comp { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; }
 		.comp .mono { white-space: nowrap; font-size: 13px; }
 
+		.bars { display: flex; gap: 2px; height: 26px; margin-bottom: 14px; }
+		.bars i { flex: 1; background: var(--green); opacity: .8; }
+		.bars i:hover { opacity: 1; }
+		.bars i.warn { background: var(--yellow); }
+		.bars i.bad { background: var(--red); }
+		.legend { display: flex; justify-content: space-between; font: 11px var(--mono); color: var(--muted); }
 
 		.incident { margin-bottom: 22px; }
 		.incident:last-child { margin: 0; }
@@ -48,6 +54,7 @@
 
 	<h2>Components</h2>
 	<div class="box" id="components">
+		<div class="legend"><span>90 days ago</span><span>today</span></div>
 		<div class="comp"><span>Backend engineering <span class="muted">Java, Spring Boot</span></span><span class="mono ok">● Operational</span></div>
 		<div class="comp"><span>Cloud &amp; CI/CD <span class="muted">AWS ECS, GitHub Actions, Datadog</span></span><span class="mono ok">● Operational</span></div>
 		<div class="comp" data-flaky="0.04" data-why="missed golden hour"><span>Photography <a class="muted" href="https://instagram.com/levy.foto" target="_blank">@levy.foto</a></span><span class="mono ok">● Operational</span></div>
@@ -103,6 +110,19 @@
 	<footer>Thanks for stopping by. Want to get in touch? <a href="https://www.linkedin.com/in/levyosa/" target="_blank">LinkedIn</a> · <a href="https://instagram.com/levy.foto" target="_blank">Instagram</a></footer>
 
 	<script>
+		// 90 little bars under each component, one per day. Flaky ones get some bad days.
+		document.querySelectorAll(".comp").forEach(comp => {
+			const flaky = parseFloat(comp.dataset.flaky || 0);
+			let bars = "";
+			for (let day = 89; day >= 0; day--) {
+				let state = "";
+				if (Math.random() < flaky) state = Math.random() < 0.5 ? "warn" : "bad";
+				const label = state ? comp.dataset.why : "no incidents";
+				bars += `<i class="${state}" title="${day} days ago: ${label}"></i>`;
+			}
+			comp.insertAdjacentHTML("afterend", `<div class="bars">${bars}</div>`);
+		});
+
 		const start = new Date("2017-02-01");
 		let seconds = 0;
 
