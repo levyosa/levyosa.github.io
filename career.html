@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Levy Career Topic</title>
+	<link href="https://fonts.googleapis.com/css?family=Archivo+Black&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="fun.css">
+	<style>
+		body { max-width: none; padding: 0; display: grid; grid-template-columns: 210px 1fr; min-height: 100vh; }
+
+		/* sidebar */
+		aside { background: var(--panel); padding: 20px 0; }
+		aside .logo { display: block; font-size: 20px; padding: 0 20px 4px; text-decoration: none; }
+		aside .cluster { font: 12px var(--mono); color: var(--muted); padding: 0 20px 20px; }
+		aside a.item { display: block; padding: 10px 20px; color: var(--muted); text-decoration: none; font-size: 14px; }
+		aside a.item:hover { background: var(--panel-2); color: var(--text); }
+		aside a.item.active { background: var(--panel-2); color: var(--text); box-shadow: inset 4px 0 0 var(--green); }
+
+		main { padding: 24px; min-width: 0; }
+		.crumb { font: 13px var(--mono); color: var(--muted); }
+		.crumb b { color: var(--text); font-weight: normal; }
+		main h1 { margin: 8px 0 20px; }
+
+		/* toolbar */
+		.toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
+		.toolbar input {
+			font: 13px var(--mono); background: var(--panel); color: var(--text);
+			border: 0; padding: 8px 12px; flex: 1; min-width: 160px;
+		}
+		.toolbar .pill { font: 13px var(--mono); background: var(--panel); padding: 8px 12px; color: var(--muted); }
+		#tail.on { color: var(--green); }
+
+		/* table */
+		.table-wrap { overflow-x: auto; }
+		table { width: 100%; border-collapse: collapse; font: 13px var(--mono); }
+		th { text-align: left; color: var(--muted); font-weight: normal; padding: 8px 12px; background: var(--panel); white-space: nowrap; }
+		td { padding: 9px 12px; vertical-align: top; }
+		tbody tr.msg { cursor: pointer; }
+		tbody tr.msg:nth-child(odd) { background: #0a0a0e; }
+		tbody tr.msg:hover { background: var(--panel-2); }
+		tr.msg.new { animation: flash 1.2s; }
+		@keyframes flash { from { background: rgba(62, 207, 142, .25); } }
+		td.key { color: var(--yellow); white-space: nowrap; }
+		td.value { word-break: break-word; }
+		td.nowrap { white-space: nowrap; color: var(--muted); }
+		tr.detail td { background: var(--panel-2); padding: 14px 16px 16px; font-family: system-ui, sans-serif; font-size: 14px; color: #c4c4dc; }
+		tr.detail .headers { font: 12px var(--mono); color: var(--muted); margin-top: 8px; }
+		.count { font: 12px var(--mono); color: var(--muted); margin-top: 10px; }
+
+		@media (max-width: 760px) {
+			body { grid-template-columns: 1fr; }
+			aside { display: flex; align-items: center; flex-wrap: wrap; padding: 12px 8px; }
+			aside .cluster { display: none; }
+			aside .logo { padding: 0 12px 0 8px; }
+			aside a.item { padding: 6px 10px; }
+			aside a.item.active { box-shadow: inset 0 -3px 0 var(--green); }
+			main { padding: 16px; }
+			.hide-sm { display: none; }
+		}
+	</style>
+</head>
+<body>
+	<aside>
+		<a class="logo" href="index.html">Levy F.</a>
+		<div class="cluster">cluster: levy-prod</div>
+		<a class="item" href="index.html">Home</a>
+		<a class="item active" href="career.html">Topics</a>
+		<a class="item" href="status.html">Status</a>
+		<a class="item" href="https://www.linkedin.com/in/levyosa/" target="_blank">Get in touch ↗</a>
+	</aside>
+
+	<main>
+		<div class="crumb">Topics / <b>levy.career</b></div>
+		<h1>levy.career</h1>
+
+		<section id="data">
+			<div class="toolbar">
+				<span class="pill">sort: newest</span>
+				<span class="pill">partition: all</span>
+				<button id="tail" class="on" onclick="toggleTail()">● live tail</button>
+				<input id="search" placeholder="search key or value..." oninput="draw()">
+			</div>
+			<div class="table-wrap">
+				<table>
+					<thead><tr><th>Key</th><th>Value</th><th>Date</th><th class="hide-sm">Partition</th><th>Offset</th></tr></thead>
+					<tbody id="rows"></tbody>
+				</table>
+			</div>
+			<div class="count" id="count"></div>
+		</section>
+
+	</main>
+
+	<script>
+		// oldest first, like the log. The table shows them newest first.
+		const messages = [
+			["edu",   "2017",     '{"event":"enrolled","school":"IFPR"}', "Started Systems Analysis & Development at Instituto Federal do Paraná."],
+			["award", "2018",     '{"event":"won","place":1,"contest":"Células Empreendedoras Marathon"}', "First place at an entrepreneurship marathon."],
+			["award", "2019",     '{"event":"won","place":1,"contest":"IFTECH Innovation Fair"}', "First place at the innovation fair of the IFPR Paranaguá campus."],
+			["award", "unknown",  '{"event":"won","place":1,"contest":"First Class Space Explorer","city":"Curitiba"}', "First place, First Class Space Explorer. The timestamp got lost in space."],
+			["job",   "Mar 2020", '{"event":"joined","company":"UNESPAR","role":"IT Intern"}', "First job. IT intern at Universidade Estadual do Paraná."],
+			["job",   "Mar 2021", '{"event":"joined","company":"Cogna (Unopar)","role":"IT Technician"}', "Networks, servers and equipment. Also taught algorithm classes."],
+			["edu",   "2021",     '{"event":"graduated","school":"IFPR"}', "Graduated. Published a Hyper-Threading performance study and an IoT device to control air conditioners remotely."],
+			["job",   "Sep 2021", '{"event":"joined","company":"EBANX","role":"Backend Engineer"}', "Payment systems on PIX, STR and SPI at 99.9%+ uptime. Moved repos to GitHub with CI/CD on GitHub Actions, added Datadog, mentored an intern."],
+			["job",   "Aug 2024", '{"event":"joined","company":"MAPS S.A.","role":"Backend Engineer","stack":["Java","Spring Boot","Kafka","AWS ECS"]}', "Building BOLETO, PIX and STR services and reconciliation workflows for boleto settlements at high volume."],
+			["edu",   "Dec 2025", '{"event":"graduated","school":"UFSCar","course":"Postgrad in Computing"}', "Postgraduate in Computing at UFSCar."],
+			["heartbeat", "now",  '{"event":"status","doing":"building payments","hobby":"photography"}', 'Still producing. Off-call I shoot photos: <a href="https://instagram.com/levy.foto" target="_blank">@levy.foto</a>'],
+		];
+
+		let produced = 0, tailing = true, open = null, newest = -1;
+
+		function draw() {
+			const search = document.getElementById("search").value.toLowerCase();
+			let html = "";
+			for (let offset = produced - 1; offset >= 0; offset--) {
+				const [key, date, value, text] = messages[offset];
+				if (search && !(key + value).toLowerCase().includes(search)) continue;
+				html += `<tr class="msg${offset === newest ? " new" : ""}" onclick="toggle(${offset})">
+					<td class="key">${key}</td><td class="value">${value}</td>
+					<td class="nowrap">${date}</td><td class="nowrap hide-sm">0</td><td class="nowrap">${offset}</td></tr>`;
+				if (open === offset) {
+					html += `<tr class="detail"><td colspan="5">${text}
+						<div class="headers">headers: { source: "linkedin", schema: "career-v1" }</div></td></tr>`;
+				}
+			}
+			document.getElementById("rows").innerHTML = html;
+			document.getElementById("count").textContent = `${produced} of ${messages.length} messages`;
+			newest = -1;
+		}
+
+		function toggle(offset) {
+			open = open === offset ? null : offset;
+			draw();
+		}
+
+		function toggleTail() {
+			tailing = !tailing;
+			document.getElementById("tail").classList.toggle("on", tailing);
+			document.getElementById("tail").textContent = tailing ? "● live tail" : "○ paused";
+		}
+
+		setInterval(() => {
+			if (!tailing || produced >= messages.length) return;
+			newest = produced;
+			produced++;
+			draw();
+		}, 1200);
+
+		draw();
+	</script>
+</body>
+</html>
