@@ -22,6 +22,11 @@
 		.crumb b { color: var(--text); font-weight: normal; }
 		main h1 { margin: 8px 0 20px; }
 
+		/* tabs */
+		.tabs { display: flex; gap: 4px; margin-bottom: 16px; flex-wrap: wrap; }
+		.tabs button { background: var(--panel); color: var(--muted); }
+		.tabs button.active { background: var(--panel-2); color: var(--text); box-shadow: inset 0 -3px 0 var(--green); }
+
 		/* toolbar */
 		.toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
 		.toolbar input {
@@ -47,6 +52,11 @@
 		tr.detail td { background: var(--panel-2); padding: 14px 16px 16px; font-family: system-ui, sans-serif; font-size: 14px; color: #c4c4dc; }
 		tr.detail .headers { font: 12px var(--mono); color: var(--muted); margin-top: 8px; }
 		.count { font: 12px var(--mono); color: var(--muted); margin-top: 10px; }
+
+		/* other tabs */
+		.kv td:first-child { color: var(--muted); width: 40%; }
+		.kv tr:nth-child(odd) { background: #0a0a0e; }
+		[hidden] { display: none !important; }
 
 		@media (max-width: 760px) {
 			body { grid-template-columns: 1fr; }
@@ -74,6 +84,13 @@
 		<div class="crumb">Topics / <b>levy.career</b></div>
 		<h1>levy.career</h1>
 
+		<div class="tabs">
+			<button class="active" data-tab="data">Data</button>
+			<button data-tab="partitions">Partitions</button>
+			<button data-tab="groups">Consumer Groups</button>
+			<button data-tab="configs">Configs</button>
+		</div>
+
 		<section id="data">
 			<div class="toolbar">
 				<span class="pill">sort: newest</span>
@@ -90,6 +107,38 @@
 			<div class="count" id="count"></div>
 		</section>
 
+		<section id="partitions" hidden>
+			<table class="kv">
+				<tr><td>partition</td><td>0</td></tr>
+				<tr><td>leader</td><td>levy</td></tr>
+				<tr><td>replicas</td><td>1 (there is only one of me)</td></tr>
+				<tr><td>in-sync replicas</td><td>1</td></tr>
+				<tr><td>first offset</td><td>0 (2017)</td></tr>
+				<tr><td>last offset</td><td id="last-offset">0</td></tr>
+			</table>
+		</section>
+
+		<section id="groups" hidden>
+			<table>
+				<thead><tr><th>Group</th><th>State</th><th>Lag</th></tr></thead>
+				<tbody>
+					<tr><td>visitors</td><td class="ok">Stable</td><td>0 (hi, that's you)</td></tr>
+					<tr><td>friends-and-family</td><td class="ok">Stable</td><td>0</td></tr>
+					<tr><td>instagram-followers</td><td class="warn">Rebalancing</td><td>a few photos behind</td></tr>
+				</tbody>
+			</table>
+		</section>
+
+		<section id="configs" hidden>
+			<table class="kv">
+				<tr><td>retention.ms</td><td>-1 (keeping it all)</td></tr>
+				<tr><td>cleanup.policy</td><td>never-delete</td></tr>
+				<tr><td>compression.type</td><td>coffee</td></tr>
+				<tr><td>languages</td><td>pt-BR, en (both native)</td></tr>
+				<tr><td>min.insync.replicas</td><td>1</td></tr>
+				<tr><td>max.message.bytes</td><td>enough for a hello</td></tr>
+			</table>
+		</section>
 	</main>
 
 	<script>
@@ -126,6 +175,7 @@
 			}
 			document.getElementById("rows").innerHTML = html;
 			document.getElementById("count").textContent = `${produced} of ${messages.length} messages`;
+			document.getElementById("last-offset").textContent = produced - 1;
 			newest = -1;
 		}
 
@@ -146,6 +196,13 @@
 			produced++;
 			draw();
 		}, 1200);
+
+		document.querySelectorAll(".tabs button").forEach(button => {
+			button.onclick = () => {
+				document.querySelectorAll(".tabs button").forEach(b => b.classList.toggle("active", b === button));
+				document.querySelectorAll("main section").forEach(s => s.hidden = s.id !== button.dataset.tab);
+			};
+		});
 
 		draw();
 	</script>
