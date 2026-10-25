@@ -77,6 +77,18 @@ p{
 }
 
 
+.corner {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  right: 16px;
+  text-align: right;
+  font: 13px/1.8 ui-monospace, Menlo, Consolas, monospace;
+}
+.corner .status-badge { margin-left: 24px; white-space: nowrap; color: #3ecf8e; text-decoration: none; opacity: 80%; }
+.corner .status-badge:hover { opacity: 100%; }
+
+
 ::selection{
   background: transparent;
 }
