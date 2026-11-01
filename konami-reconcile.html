@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Konami Reconcile</title>
+	<link href="https://fonts.googleapis.com/css?family=Archivo+Black&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="fun.css">
+	<style>
+		.board { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+		.board .box { padding: 10px; margin: 0; }
+		.board .box > b { font: 12px var(--mono); color: var(--muted); }
+		.row { display: block; width: 100%; text-align: left; margin-bottom: 6px; white-space: pre-wrap; }
+		.row.picked { background: var(--text); color: var(--bg); }
+		.row.done { opacity: .3; pointer-events: none; color: var(--green); text-decoration: line-through; }
+		.row.flag { background: rgba(245, 197, 66, .15); color: var(--yellow); pointer-events: none; }
+		#msg { min-height: 1.6em; margin: 8px 0 16px; font-family: var(--mono); }
+		.hud { font: 13px var(--mono); color: var(--muted); }
+		.hud b { color: var(--text); }
+		@media (max-width: 600px) { .board { gap: 8px; } .row { font-size: 12px; padding: 6px; } }
+	</style>
+</head>
+<body>
+	<nav>
+		<a class="logo" href="index.html">Levy F.</a>
+		<span><a href="status.html">status</a><a href="career.html">career</a></span>
+	</nav>
+
+	<h1>Reconcile this</h1>
+	<p class="sub">
+		Pick a bank entry, then its ledger entry. Match by amount and date (boletos can land one day later in the bank).
+		One pair per round doesn't add up: pair it anyway to flag it. Wrong pairs cost 5 seconds.
+	</p>
+
+	<div class="box hud">
+		round <b id="round">1</b>/3 &nbsp; time <b id="time">0</b>s &nbsp; mistakes <b id="mistakes">0</b>
+	</div>
+
+	<p id="msg"></p>
+
+	<div class="board">
+		<div class="box"><b>bank statement</b><br><br><div id="bank"></div></div>
+		<div class="box"><b>internal ledger</b><br><br><div id="ledger"></div></div>
+	</div>
+
+	<footer>Thanks for playing! Want to get in touch? <a href="https://www.linkedin.com/in/levyosa/" target="_blank">LinkedIn</a></footer>
+
+	<script>
+		const sizes = [5, 7, 9];
+		let round = 0, seconds = 0, mistakes = 0, left = 0, picked = null, items = [];
+
+		const random = (min, max) => min + Math.floor(Math.random() * (max - min + 1));
+		const money = n => "R$ " + n.toFixed(2).replace(".", ",");
+		const day = n => String(n).padStart(2, "0") + "/11";
+
+		function newRound() {
+			items = [];
+			for (let i = 0; i < sizes[round]; i++) {
+				const type = ["PIX", "BOLETO", "STR"][random(0, 2)];
+				const amount = random(10, 5000) + random(0, 99) / 100;
+				const date = random(1, 20);
+				items.push({
+					id: i,
+					bank: `${type} ${random(1000, 9999)}  ${day(type === "BOLETO" ? date + 1 : date)}  ${money(amount)}`,
+					ledger: `order #${random(10000, 99999)}  ${day(date)}  ${money(amount)}`,
+				});
+			}
+			// the one that doesn't add up: the bank got a few cents less
+			const bad = items[random(0, items.length - 1)];
+			bad.bank = bad.bank.replace(/R\$ .*/, m => money(parseFloat(m.slice(3).replace(",", ".")) - random(1, 50) / 100));
+			bad.wrong = true;
+
+			left = items.length;
+			draw("bank", items);
+			draw("ledger", [...items].sort(() => Math.random() - 0.5));
+			document.getElementById("round").textContent = round + 1;
+		}
+
+		function draw(side, list) {
+			document.getElementById(side).innerHTML = list
+				.map(item => `<button class="row" id="${side}-${item.id}" onclick="pick('${side}', ${item.id})">${item[side]}</button>`)
+				.join("");
+		}
+
+		function pick(side, id) {
+			const button = document.getElementById(side + "-" + id);
+			if (side === "bank") {
+				document.querySelectorAll(".picked").forEach(b => b.classList.remove("picked"));
+				button.classList.add("picked");
+				picked = id;
+				return;
+			}
+			if (picked === null) return say("Pick a bank entry first.");
+
+			const bankButton = document.getElementById("bank-" + picked);
+			bankButton.classList.remove("picked");
+
+			if (picked !== id) {
+				mistakes++;
+				seconds += 5;
+				say("Nope, those don't belong together. +5s");
+			} else if (items[id].wrong) {
+				bankButton.classList.add("flag");
+				button.classList.add("flag");
+				say("Flagged! The amounts don't match. Somebody lost a few cents.");
+				left--;
+			} else {
+				bankButton.classList.add("done");
+				button.classList.add("done");
+				say("Matched.");
+				left--;
+			}
+			picked = null;
+			document.getElementById("mistakes").textContent = mistakes;
+
+			if (left === 0) nextRound();
+		}
+
+		function nextRound() {
+			round++;
+			if (round < sizes.length) {
+				say("Round closed. Next one is bigger.");
+				return newRound();
+			}
+			clearInterval(timer);
+			say(`Books closed in ${seconds}s with ${mistakes} mistakes. Now imagine every PIX and boleto, every day. Thanks for playing!`);
+		}
+
+		function say(text) {
+			document.getElementById("msg").textContent = text;
+		}
+
+		let timer;
+		function startTimer() {
+			timer = setInterval(() => {
+				seconds++;
+				document.getElementById("time").textContent = seconds;
+			}, 1000);
+		}
+
+		startTimer();
+
+		newRound();
+	</script>
+</body>
+</html>
