@@ -4,6 +4,9 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Konami Reconcile</title>
+	<!-- arriving through the konami code: keep the page hidden until the matrix intro takes over -->
+	<style>.intro { background: #000; } .intro body { visibility: hidden; }</style>
+	<script>if (location.hash === "#matrix") document.documentElement.classList.add("intro");</script>
 	<link href="https://fonts.googleapis.com/css?family=Archivo+Black&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="fun.css">
 	<style>
@@ -138,7 +141,12 @@
 			}, 1000);
 		}
 
-		startTimer();
+		// arriving through the konami code: wait for the matrix intro to finish
+		if (location.hash === "#matrix") {
+			document.addEventListener("intro-done", startTimer, { once: true });
+		} else {
+			startTimer();
+		}
 
 		newRound();
 	</script>
