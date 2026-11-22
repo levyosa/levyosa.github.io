@@ -77,6 +77,12 @@ p{
 }
 
 
+/* the * rule above adds padding and a black background to everything; undo it here */
+.corner, .corner * {
+  padding: 0;
+  background: transparent;
+}
+
 .corner {
   position: fixed;
   top: 16px;
