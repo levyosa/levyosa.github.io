@@ -59,7 +59,7 @@
 		function newRound() {
 			items = [];
 			for (let i = 0; i < sizes[round]; i++) {
-				const type = ["PIX", "BOLETO", "STR"][random(0, 2)];
+				const type = ["PIX", "BOLETO", "TED"][random(0, 2)];
 				const amount = random(10, 5000) + random(0, 99) / 100;
 				const date = random(1, 20);
 				items.push({
